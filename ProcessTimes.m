@@ -106,7 +106,7 @@ upwardsTimesExactly1 = datetime(upwardsTimesExactly1,"InputFormat", inputFormat,
 occultationTimes = datetime(occultationTimes,"InputFormat", inputFormat, ...
     "Format", outputFormat);
 
-% ---------- Atleast 4 backwards & upwards ---------- %
+% ---------- Atleast 4 backwards or upwards ---------- %
 combinedAtleast4 = sortrows([backwardsTimesAtleast4; upwardsTimesAtleast4], 1);
 
 combinedAtleast4 = union(combinedAtleast4);
