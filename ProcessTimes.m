@@ -160,7 +160,7 @@ percentAccess = hours(totalDuration) / (24*14);
 % Includes 4 GPS access for positioning and time synchronization
 totalOccultationDuration =  sum(occultationDurations);
 percentOccultation = hours(totalOccultationDuration) / (24*14);
-dailyOccultationAvg = totalOccultationDuration / 14; % hours
+dailyOccultationAvg = totalOccultationDuration / 14; % hours / day
 occultationAvg = mean(occultationDurations);
 
 % Plot the durations on time graph (unfiltered for <5)

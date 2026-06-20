@@ -1,31 +1,50 @@
 close all
 % Make sure to run STKSetup first
 
+% List of data to run simulations for
+ELEMENTS = {'Start Time'; 'Stop Time'; 'To Start Lat'; 'To Stop Lat'};
+
 % To get GPS access based on different access constraints
 function [backwards, upwards] = getGPSAccess(constraints, restrictionType, restrictionNum ...
-    , backwardsChain, upwardsChain, scenario)
+    , backwardsChain, upwardsChain, scenario, elementList)
+
+    startTime = scenario.StartTime;
+    stopTime = scenario.StopTime;
 
     % Set access constraint
     constraints.SetFromRestrictionType(restrictionType);
     constraints.FromRestriction.NumberOfObjects = restrictionNum;
     
     % Execute and get results
-    objectAccessBackwards = backwardsChain.DataProviders.Item('Object Access');
-    objectAccessUpwards = upwardsChain.DataProviders.Item('Object Access');
+    accessObjectBackwards = backwardsChain.DataProviders.Item('Access Data');
+    accessObjectUpwards = upwardsChain.DataProviders.Item('Access Data');
     
-    results = objectAccessBackwards.Exec(scenario.StartTime, scenario.StopTime);
-    array = results.DataSets.ToArray;
+    % Get specific data for backwards chain
+    backwards = getData(accessObjectBackwards, startTime, stopTime, elementList);
+   
+    % Get specific data for upwards chain
+    upwards = getData(accessObjectUpwards, startTime, stopTime, elementList);
+end
+
+% Get the specified data
+function [resultCell] = getData(accessObject, startTime, stopTime, ...
+    elementList)
+
+    elementNum = size(elementList, 1);
     
-    % Get start and end times for backwards chain
-    CTSindex = (find(array(1,1:5:size(array,2)) == "NEW-CTS-SAT-1/Backwards") - 1) * 5 + 1;
-    backwards = [array(:,CTSindex + 2), array(:,CTSindex + 3)];
-    
-    results = objectAccessUpwards.Exec(scenario.StartTime, scenario.StopTime);
-    array = results.DataSets.ToArray;
-    
-    % Get start and end times for upwards chain
-    CTSindex = (find(array(1,1:5:size(array,2)) == "NEW-CTS-SAT-1/Upwards") - 1) * 5 + 1;
-    upwards = [array(:,CTSindex + 2), array(:,CTSindex + 3)];
+    % Execute the query
+    results = ...
+    accessObject.ExecElements(startTime, stopTime, elementList).DataSets.ToArray;
+
+    % Data is given for each satellite in each column (must combine)
+    rowNum = size(results, 1);
+    resultCell = cell(rowNum * elementNum, elementNum);
+
+    % For each satellite
+    for i = 1:size(results,2) / elementNum
+        resultCell(rowNum * (i-1) + 1 : rowNum * i,:) = ...
+            results(:,elementNum * (i-1) + 1 : elementNum * i);
+    end
 end
 
 % Paths
@@ -44,33 +63,34 @@ constraints = GPS.Constraints;
 
 % AT LEAST 4 
 [backwardsTimesAtleast4, upwardsTimesAtleast4] = getGPSAccess(constraints, ...
-    'eCnCnstrRestrictionAtLeastN', 4, backwardsChain, upwardsChain, scenario);
+    'eCnCnstrRestrictionAtLeastN', 4, backwardsChain, upwardsChain, scenario, ELEMENTS);
 
 % EXACTLY 3 
 [backwardsTimesExactly3, upwardsTimesExactly3] = getGPSAccess(constraints, ...
-    'eCnCnstrRestrictionExactlyN', 3, backwardsChain, upwardsChain, scenario);
+    'eCnCnstrRestrictionExactlyN', 3, backwardsChain, upwardsChain, scenario, ELEMENTS);
 
 % EXACTLY 2 
 [backwardsTimesExactly2, upwardsTimesExactly2] = getGPSAccess(constraints, ...
-    'eCnCnstrRestrictionExactlyN', 2, backwardsChain, upwardsChain, scenario);
+    'eCnCnstrRestrictionExactlyN', 2, backwardsChain, upwardsChain, scenario, ELEMENTS);
 
 % EXACTLY 1 
 [backwardsTimesExactly1, upwardsTimesExactly1] = getGPSAccess(constraints, ...
-    'eCnCnstrRestrictionExactlyN', 1, backwardsChain, upwardsChain, scenario);
+    'eCnCnstrRestrictionExactlyN', 1, backwardsChain, upwardsChain, scenario, ELEMENTS);
 
 % OCCULTATION
-occultationObject = occultationChain.DataProviders.Item('Object Access');
+startTime = scenario.StartTime;
+stopTime = scenario.StopTime;
+occultationObject = occultationChain.DataProviders.Item('Access Data');
 
-% Set access constraint
+% Set access constraint to any
 constraints.SetFromRestrictionType('eCnCnstrRestrictionAnyOf');
 
 % Get access
-results = occultationObject.Exec(scenario.StartTime, scenario.StopTime);
-array = results.DataSets.ToArray;
+results = ...
+occultationObject.ExecElements(startTime, stopTime, ELEMENTS).DataSets.ToArray;
 
-% Get start and end times for occultation chain
-CTSindex = (find(array(1,1:5:size(array,2)) == "NEW-CTS-SAT-1/Occultation") - 1) * 5 + 1;
-occultation = [array(:,CTSindex + 2), array(:,CTSindex + 3)];
+% Get occultation chain
+occultation = getData(occultationObject, startTime, stopTime, ELEMENTS);
 
 % Write matrices
 writecell(backwardsTimesAtleast4, "output\backwardsTimesAtleast4");
