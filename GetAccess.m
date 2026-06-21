@@ -4,9 +4,17 @@ close all
 % List of data to run simulations for
 ELEMENTS = {'Start Time'; 'Stop Time'; 'To Start Lat'; 'To Stop Lat'};
 
+% Paths
+backwardsChainPath = '/Chain/Backwards';
+upwardsChainPath = '/Chain/Upwards';
+occultationPath = '/Chain/Occultation';
+gpsPath = '/Constellation/GPS';
+
+% --------------------------------------------------------------------------------%
+
 % To get GPS access based on different access constraints
-function [backwards, upwards] = getGPSAccess(constraints, restrictionType, restrictionNum ...
-    , backwardsChain, upwardsChain, scenario, elementList)
+function [backwards, upwards] = getGPSAccess(constraints, restrictionType, ...
+    restrictionNum, backwardsChain, upwardsChain, scenario, elementList)
 
     startTime = scenario.StartTime;
     stopTime = scenario.StopTime;
@@ -53,12 +61,6 @@ function [output] = removeNaN(cell)
 
     output = cell;
 end
-
-% Paths
-backwardsChainPath = '/Chain/Backwards';
-upwardsChainPath = '/Chain/Upwards';
-occultationPath = '/Chain/Occultation';
-gpsPath = '/Constellation/GPS';
 
 % Get objects
 backwardsChain = root.GetObjectFromPath(backwardsChainPath);

@@ -1,6 +1,11 @@
 clear
 close all
 
+% List of data to run simulations for
+ELEMENTS = {'Start Time'; 'Stop Time'; 'To Start Lat'; 'To Stop Lat'};
+
+% --------------------------------------------------------------------------------%
+
 % Unionizes any overlapping time intervals
 function output = union(combined)
     overlapFlag = 1;
@@ -65,8 +70,8 @@ function output = intersect(combined)
     output = output(~isnat(output(:,1)), :);
 end
 
+% Convert to datetime
 function [output] = toDateTime(input)
-    % Convert to datetime
     inputFormat = "dd MMMM yyyy HH:mm:ss.SSS";
     outputFormat = "dd MMM uuuu HH:mm:ss.SSS";
 
@@ -74,34 +79,45 @@ function [output] = toDateTime(input)
     "Format", outputFormat);
 end
 
+% Set options for reading tables
+opt = detectImportOptions("Output\backwardsTimesAtleast4.txt");
+
+opt.Delimiter = ',';
+opt.VariableTypes{1} = 'datetime';
+opt.VariableTypes{2} = 'datetime';
+opt.VariableTypes{3} = 'double';
+opt.VariableTypes{4} = 'double';
+opt.VariableNames = ELEMENTS;
+
+% Date time formatting
+opt = setvaropts(opt, ELEMENTS{1}, 'InputFormat', "dd MMMM yyyy HH:mm:ss.SSS");
+opt = setvaropts(opt, ELEMENTS{2}, 'InputFormat', "dd MMMM yyyy HH:mm:ss.SSS");
+
 % Read in access times
-backwardsTimesAtleast4 = string(readcell("output\backwardsTimesAtleast4","Delimiter",","));
-backwardsTimesExactly3 = string(readcell("output\backwardsTimesExactly3","Delimiter",","));
-backwardsTimesExactly2 = string(readcell("output\backwardsTimesExactly2","Delimiter",","));
-backwardsTimesExactly1 = string(readcell("output\backwardsTimesExactly1","Delimiter",","));
+backwardsTimesAtleast4 = readtable("output\backwardsTimesAtleast4",opt);
+backwardsTimesExactly3 = readtable("output\backwardsTimesExactly3",opt);
+backwardsTimesExactly2 = readtable("output\backwardsTimesExactly2",opt);
+backwardsTimesExactly1 = readtable("output\backwardsTimesExactly1",opt);
 
-upwardsTimesAtleast4 = string(readcell("output\upwardsTimesAtleast4","Delimiter",","));
-upwardsTimesExactly3 = string(readcell("output\upwardsTimesExactly3","Delimiter",","));
-upwardsTimesExactly2 = string(readcell("output\upwardsTimesExactly2","Delimiter",","));
-upwardsTimesExactly1 = string(readcell("output\upwardsTimesExactly1","Delimiter",","));
+upwardsTimesAtleast4 = readtable("output\upwardsTimesAtleast4",opt);
+upwardsTimesExactly3 = readtable("output\upwardsTimesExactly3",opt);
+upwardsTimesExactly2 = readtable("output\upwardsTimesExactly2",opt);
+upwardsTimesExactly1 = readtable("output\upwardsTimesExactly1",opt);
 
-occultationTimes = string(readcell("output\occultationTimes","Delimiter",","));
+occultationTimes = readtable("output\occultationTimes",opt);
 
-% Store lat separately
+% Sort the rows (ascending order) based on the start time and union
+backwardsTimesAtleast4 = union(sortrows(backwardsTimesAtleast4, 1));
+backwardsTimesExactly3 = union(sortrows(backwardsTimesExactly3, 1));
+backwardsTimesExactly2 = union(sortrows(backwardsTimesExactly2, 1));
+backwardsTimesExactly1 = union(sortrows(backwardsTimesExactly1, 1));
 
+upwardsTimesAtleast4 = union(sortrows(upwardsTimesAtleast4, 1));
+upwardsTimesExactly3 = union(sortrows(upwardsTimesExactly3, 1));
+upwardsTimesExactly2 = union(sortrows(upwardsTimesExactly2, 1));
+upwardsTimesExactly1 = union(sortrows(upwardsTimesExactly1, 1));
 
-% Convert to dateTime and remove lat
-backwardsTimesAtleast4 = union(sortrows(toDateTime(backwardsTimesAtleast4(:,1:2)), 1));
-backwardsTimesExactly3 = union(sortrows(toDateTime(backwardsTimesExactly3(:,1:2)), 1));
-backwardsTimesExactly2 = union(sortrows(toDateTime(backwardsTimesExactly2(:,1:2)), 1));
-backwardsTimesExactly1 = union(sortrows(toDateTime(backwardsTimesExactly1(:,1:2)), 1));
-
-upwardsTimesAtleast4 = union(sortrows(toDateTime(upwardsTimesAtleast4(:,1:2)), 1));
-upwardsTimesExactly3 = union(sortrows(toDateTime(upwardsTimesExactly3(:,1:2)), 1));
-upwardsTimesExactly2 = union(sortrows(toDateTime(upwardsTimesExactly2(:,1:2)), 1));
-upwardsTimesExactly1 = union(sortrows(toDateTime(upwardsTimesExactly1(:,1:2)), 1));
-
-occultationTimes = union(sortrows(toDateTime(occultationTimes(:,1:2)), 1));
+occultationTimes = union(sortrows(occultationTimes, 1));
 
 % ---------- Atleast 4 backwards & upwards ---------- %
 combinedAtleast4 = sortrows([backwardsTimesAtleast4; upwardsTimesAtleast4], 1);
