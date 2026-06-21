@@ -47,6 +47,13 @@ function [resultCell] = getData(accessObject, startTime, stopTime, ...
     end
 end
 
+function [output] = removeNaN(cell)
+    rowHasNaN = any(cellfun(@(x) isnumeric(x) && any(isnan(x)), cell), 2);
+    cell(rowHasNaN, :) = [];
+
+    output = cell;
+end
+
 % Paths
 backwardsChainPath = '/Chain/Backwards';
 upwardsChainPath = '/Chain/Upwards';
@@ -91,6 +98,19 @@ occultationObject.ExecElements(startTime, stopTime, ELEMENTS).DataSets.ToArray;
 
 % Get occultation chain
 occultation = getData(occultationObject, startTime, stopTime, ELEMENTS);
+
+% Remove rows with a NaN value
+backwardsTimesAtleast4 = removeNaN(backwardsTimesAtleast4);
+backwardsTimesExactly3 = removeNaN(backwardsTimesExactly3);
+backwardsTimesExactly2 = removeNaN(backwardsTimesExactly2);
+backwardsTimesExactly1 = removeNaN(backwardsTimesExactly1);
+
+upwardsTimesAtleast4 = removeNaN(upwardsTimesAtleast4);
+upwardsTimesExactly3 = removeNaN(upwardsTimesExactly3);
+upwardsTimesExactly2 = removeNaN(upwardsTimesExactly2);
+upwardsTimesExactly1 = removeNaN(upwardsTimesExactly1);
+
+occultation = removeNaN(occultation);
 
 % Write matrices
 writecell(backwardsTimesAtleast4, "output\backwardsTimesAtleast4");
