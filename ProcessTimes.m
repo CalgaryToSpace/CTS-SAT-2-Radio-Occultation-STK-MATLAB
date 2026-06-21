@@ -13,8 +13,8 @@ function output = union(combined)
             % Check if intervals overlap
             if combined(i,1) <= combined(i+1,2) && combined(i,2) >= combined(i+1,1)
                 % New unionized interval
-                combined(i,1) = min([combined(i,:) combined(i+1,:)]); % max of time
-                combined(i,2) = max([combined(i,:) combined(i+1,:)]); % end of times
+                combined(i,1) = min([combined(i,:) combined(i+1,:)]); % max of times
+                combined(i,2) = max([combined(i,:) combined(i+1,:)]); % min of times
 
                 combined(i+1,:) = NaT;
                 overlapFlag = 1;
@@ -133,8 +133,10 @@ combined3Back2up = sortrows([backwardsTimesExactly3; upwardsTimesExactly2], 1);
 
 combined3Back2up = intersect(combined3Back2up);
 
-allAccessIntervals = [combinedAtleast4; combined1Back3Up; combined2Back2Up;...
-    combined3Back1up; combined2Back3up; combined3Back2up];
+allAccessIntervals = sort([combinedAtleast4; combined1Back3Up; combined2Back2Up;...
+    combined3Back1up; combined2Back3up; combined3Back2up], 1);
+
+allAccessIntervals = union(allAccessIntervals);
 
 % -------- Occultation with positioning -------%
 combinedOccultation = sortrows([allAccessIntervals; occultationTimes], 1);
