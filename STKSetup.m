@@ -8,7 +8,7 @@ root = uiApplication.Personality2;
 
 uiApplication.Visible = 1;
 
-% Allows us to access objects in scenario
+% Allows us to access objects in scenario (REPLACE WITH CORRECT PATH)
 scenarioPath = "C:\Users\roblo\OneDrive - University of Calgary\Desktop\STK files\RadioOccultation\RadioOccultation.sc";
 root.LoadScenario(scenarioPath);
 
