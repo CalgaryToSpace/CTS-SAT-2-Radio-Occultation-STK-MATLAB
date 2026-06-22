@@ -1,8 +1,8 @@
 clear
 close all
 
-% List of data to run simulations for
-ELEMENTS = {'Start Time'; 'Stop Time'; 'To Start Lat'; 'To Stop Lat'};
+% List of data to run simulations for (assumes first column is datetime)
+ELEMENTS = {'StartTime'; 'StopTime'; 'ToStartLat'; 'ToStopLat'};
 
 % --------------------------------------------------------------------------------%
 
@@ -16,18 +16,18 @@ function output = union(combined)
    
         for i=1:n - 1
             % Check if intervals overlap
-            if combined(i,1) <= combined(i+1,2) && combined(i,2) >= combined(i+1,1)
+            if combined{i,1} <= combined{i+1,2} && combined{i,2} >= combined{i+1,1}
                 % New unionized interval
-                combined(i,1) = min([combined(i,:) combined(i+1,:)]); % max of times
-                combined(i,2) = max([combined(i,:) combined(i+1,:)]); % min of times
+                combined{i,1} = min([combined{i,1:2} combined{i+1,1:2}]); % min of times
+                combined{i,2} = max([combined{i,1:2} combined{i+1,1:2}]); % max of times
 
-                combined(i+1,:) = NaT;
+                combined{i+1,1} = NaT; % assumes first column is datetime
                 overlapFlag = 1;
             end
         end
 
-        % Remove any NaT values
-        combined = combined(any(~isnat(combined), 2), :);
+        % Remove any NaT rows
+        combined = combined(~ismissing(combined(:,1)), :);
     end
 
     output = combined;
@@ -39,17 +39,19 @@ function output = intersect(combined)
     i = 1; j = 2;
 
     % Checks if two intervals are overlapping
-    isOverlap = @(one, two) one(1) < two(2) && one(2) > two(1);
+    isOverlap = @(one, two) one{1,1} < two{1,2} && one{1,2} > two{1,1};
 
-    output = NaT(n, 2); % init matrix
+    output = combined([], :); % init table
+    output = resize(output, n);
+
     index = 1;
 
     % Get intersected intervals
     while(1)
         % Check if intervals overlap
         if isOverlap(combined(i,:), combined(j,:))
-            output(index,1) = max([combined(i,1) combined(j,1)]); % max of the start times
-            output(index,2) = min([combined(i,2) combined(j,2)]); % min of the end times
+            output{index,1} = max([combined{i,1} combined{j,1}]); % max of the start times
+            output{index,2} = min([combined{i,2} combined{j,2}]); % min of the end times
 
             index = index + 1;
         end
@@ -66,17 +68,8 @@ function output = intersect(combined)
         end
     end
 
-    % Remove NaT values
-    output = output(~isnat(output(:,1)), :);
-end
-
-% Convert to datetime
-function [output] = toDateTime(input)
-    inputFormat = "dd MMMM yyyy HH:mm:ss.SSS";
-    outputFormat = "dd MMM uuuu HH:mm:ss.SSS";
-
-    output = datetime(input,"InputFormat", inputFormat, ...
-    "Format", outputFormat);
+    % Remove NaT rows
+    output = output(~ismissing(output(:,1)), :);
 end
 
 % Set options for reading tables
@@ -149,7 +142,7 @@ combined3Back2up = sortrows([backwardsTimesExactly3; upwardsTimesExactly2], 1);
 
 combined3Back2up = intersect(combined3Back2up);
 
-allAccessIntervals = sort([combinedAtleast4; combined1Back3Up; combined2Back2Up;...
+allAccessIntervals = sortrows([combinedAtleast4; combined1Back3Up; combined2Back2Up;...
     combined3Back1up; combined2Back3up; combined3Back2up], 1);
 
 allAccessIntervals = union(allAccessIntervals);
@@ -159,11 +152,11 @@ combinedOccultation = sortrows([allAccessIntervals; occultationTimes], 1);
 combinedOccultation = intersect(combinedOccultation);
 
 % Filter for intervals less than 5 seconds
-accessDurations = allAccessIntervals(:,2) - allAccessIntervals(:,1);
-accessDurations = accessDurations(accessDurations > seconds(5));
+accessDurations = allAccessIntervals{:,2} - allAccessIntervals{:,1};
+accessDurations = accessDurations(accessDurations > seconds(5), 1);
 
-occultationDurations = combinedOccultation(:,2) - combinedOccultation(:,1);
-occultationDurations = occultationDurations(occultationDurations > seconds(5));
+occultationDurations = combinedOccultation{:,2} - combinedOccultation{:,1};
+occultationDurations = occultationDurations(occultationDurations > seconds(5), 1);
 
 % Statistics
 totalDuration = sum(accessDurations);
@@ -177,7 +170,7 @@ occultationAvg = mean(occultationDurations);
 
 % Plot the durations on time graph (unfiltered for <5)
 figure
-scatter(combinedOccultation(occultationDurations > seconds(5),1), ...
+scatter(combinedOccultation{occultationDurations > seconds(5),1}, ...
     occultationDurations, ".")
 title("Duration of Radio Occultations With Atleast 4 GPS Access")
 xlabel("Start Time of Interval")
