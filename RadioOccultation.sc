@@ -477,6 +477,147 @@ BEGIN Scenario
             WindowRectRight		 2779
             WindowRectBottom		 1217
         END Report
+
+        BEGIN Report
+            Name		 Access5
+            Type		 Report
+            BaseDir		 User
+            Style		 Access
+            AGIViewer		 Yes
+            Instance		 Chain/Occultation
+            BEGIN TimeData
+                BEGIN Section
+                    SectionNumber		 1
+                    SectionType		 4
+                    ShowIntervals		 No
+                    BEGIN IntervalList
+
+                        DateUnitAbrv		 UTCG
+
+                        BEGIN Intervals
+
+"5 May 2026 18:00:00.000000000" "19 May 2026 18:00:00.000000000"
+                        END Intervals
+
+                    END IntervalList
+
+                    TimeType		 Interval
+                    SamplingType		 Default
+                    TimeBound		 0
+                END Section
+            END TimeData
+            DisplayOnLoad		 No
+            FrameType		 0
+            DockCircleID		 0
+            DockID		 0
+            WindowRectLeft		 700
+            WindowRectTop		 377
+            WindowRectRight		 2724
+            WindowRectBottom		 1162
+        END Report
+
+        BEGIN Report
+            Name		 FromLat
+            Type		 Report
+            BaseDir		 User
+            Style		 FromLat
+            AGIViewer		 Yes
+            Instance		 Chain/Occultation
+            BEGIN TimeData
+                BEGIN Section
+                    SectionNumber		 1
+                    SectionType		 4
+                    ShowIntervals		 No
+                    BEGIN IntervalList
+
+                        DateUnitAbrv		 UTCG
+
+                        BEGIN Intervals
+
+"5 May 2026 18:00:00.000000000" "19 May 2026 18:00:00.000000000"
+                        END Intervals
+
+                    END IntervalList
+
+                    TimeType		 Interval
+                    SamplingType		 Default
+                    TimeBound		 0
+                END Section
+            END TimeData
+            DisplayOnLoad		 No
+            FrameType		 0
+            DockCircleID		 0
+            DockID		 0
+            WindowRectLeft		 749
+            WindowRectTop		 426
+            WindowRectRight		 2777
+            WindowRectBottom		 1215
+        END Report
+
+        BEGIN Report
+            Name		 Access6
+            Type		 Report
+            BaseDir		 User
+            Style		 Access
+            AGIViewer		 Yes
+            Instance		 Chain/Occultation
+            BEGIN TimeData
+                BEGIN Section
+                    SectionNumber		 1
+                    SectionType		 4
+                    ShowIntervals		 No
+                    TimeType		 Availability
+                    SamplingType		 Default
+                    TimeBound		 0
+                END Section
+            END TimeData
+            DisplayOnLoad		 Yes
+            FrameType		 0
+            DockCircleID		 0
+            DockID		 0
+            WindowRectLeft		 702
+            WindowRectTop		 379
+            WindowRectRight		 2726
+            WindowRectBottom		 1164
+        END Report
+
+        BEGIN Report
+            Name		 FromLat1
+            Type		 Report
+            BaseDir		 User
+            Style		 FromLat
+            AGIViewer		 Yes
+            Instance		 Chain/Occultation
+            BEGIN TimeData
+                BEGIN Section
+                    SectionNumber		 1
+                    SectionType		 4
+                    ShowIntervals		 No
+                    BEGIN IntervalList
+
+                        DateUnitAbrv		 UTCG
+
+                        BEGIN Intervals
+
+"5 May 2026 18:00:00.000000000" "19 May 2026 18:00:00.000000000"
+                        END Intervals
+
+                    END IntervalList
+
+                    TimeType		 Interval
+                    SamplingType		 Default
+                    TimeBound		 0
+                END Section
+            END TimeData
+            DisplayOnLoad		 Yes
+            FrameType		 0
+            DockCircleID		 0
+            DockID		 0
+            WindowRectLeft		 751
+            WindowRectTop		 428
+            WindowRectRight		 2779
+            WindowRectBottom		 1217
+        END Report
     END QuickReports
 
     BEGIN Extensions
@@ -744,23 +885,8 @@ BEGIN Scenario
                 Name		 Chain
                 BEGIN Favorite
                     Type		 Report
-                    BaseDir		 Install
-                    Style		 Base Object Data
-                END Favorite
-                BEGIN Favorite
-                    Type		 Report
-                    BaseDir		 Install
-                    Style		 Access Data
-                END Favorite
-                BEGIN Favorite
-                    Type		 Graph
-                    BaseDir		 Install
-                    Style		 Access AER
-                END Favorite
-                BEGIN Favorite
-                    Type		 Report
                     BaseDir		 User
-                    Style		 NumberOfAccess
+                    Style		 Access
                 END Favorite
                 BEGIN Favorite
                     Type		 Report
@@ -770,7 +896,27 @@ BEGIN Scenario
                 BEGIN Favorite
                     Type		 Report
                     BaseDir		 User
-                    Style		 Access
+                    Style		 NumberOfAccess
+                END Favorite
+                BEGIN Favorite
+                    Type		 Graph
+                    BaseDir		 Install
+                    Style		 Access AER
+                END Favorite
+                BEGIN Favorite
+                    Type		 Report
+                    BaseDir		 Install
+                    Style		 Access Data
+                END Favorite
+                BEGIN Favorite
+                    Type		 Report
+                    BaseDir		 Install
+                    Style		 Base Object Data
+                END Favorite
+                BEGIN Favorite
+                    Type		 Report
+                    BaseDir		 User
+                    Style		 FromLat
                 END Favorite
             END Class
             BEGIN Class
@@ -2012,9 +2158,9 @@ BEGIN Scenario
 
                 StartTime		 5 May 2026 18:00:00.000000000
                 EndTime		 19 May 2026 18:00:00.000000000
-                CurrentTime		 5 May 2026 23:35:39.899999950
+                CurrentTime		 13 May 2026 22:10:55.717999997
                 Direction		 Forward
-                UpdateDelta		 3
+                UpdateDelta		 0.1
                 RefreshDelta		 0.010000
                 XRealTimeMult		 1
                 RealTimeOffset		 0
