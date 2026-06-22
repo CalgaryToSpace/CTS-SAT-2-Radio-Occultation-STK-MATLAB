@@ -11,4 +11,4 @@ To fully run the program, execute the files in the following order: <br>
 3. ProcessTimes.m <br>
 -> Reads in any output files and processes the data.
 
-Note that you only have to run STKSetup and GetAccess once whenever the scenario is changed and the data is different. ProccessTimes can be executed as long as output files exist.
+Note that you only have to run STKSetup and GetAccess once whenever the scenario is changed. ProccessTimes can be executed as long as output files exist.
