@@ -127,9 +127,3 @@ writecell(upwardsTimesExactly1, "output\upwardsTimesExactly1");
 
 writecell(occultation, "output\occultationTimes");
 
-%{
-clearvars -except backwardsTimesAtleast4 backwardsTimesExactly3 ...
-backwardsTimesExactly2 backwardsTimesExactly1 upwardsTimesAtleast4 ...
-upwardsTimesExactly3 upwardsTimesExactly2 upwardsTimesExactly1 occultation ...
-root scenario uiApplication;
-%}

@@ -100,6 +100,7 @@ upwardsTimesExactly1 = readtable("output\upwardsTimesExactly1",opt);
 occultationTimes = readtable("output\occultationTimes",opt);
 
 % Sort the rows (ascending order) based on the start time and union
+% duplicates
 backwardsTimesAtleast4 = union(sortrows(backwardsTimesAtleast4, 1));
 backwardsTimesExactly3 = union(sortrows(backwardsTimesExactly3, 1));
 backwardsTimesExactly2 = union(sortrows(backwardsTimesExactly2, 1));
