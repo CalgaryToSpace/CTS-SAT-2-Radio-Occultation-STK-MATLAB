@@ -1,7 +1,7 @@
 clear
 close all
 
-% List of data to run simulations for (assumes first column is datetime)
+% List of data to run simulations (assumes first and second columns are start/stop times)
 ELEMENTS = {'StartTime'; 'StopTime'; 'ToStartLat'; 'ToStopLat'};
 
 % --------------------------------------------------------------------------------%
@@ -17,16 +17,24 @@ function output = union(combined)
         for i=1:n - 1
             % Check if intervals overlap
             if combined{i,1} <= combined{i+1,2} && combined{i,2} >= combined{i+1,1}
-                % New unionized interval
-                combined{i,1} = min([combined{i,1:2} combined{i+1,1:2}]); % min of times
-                combined{i,2} = max([combined{i,1:2} combined{i+1,1:2}]); % max of times
+                % Temporary arrays
+                allTimes = [combined{i,1:2} combined{i+1,1:2}];
+                allLats = [combined{i,3:4} combined{i+1,3:4}];
 
-                combined{i+1,1} = NaT; % assumes first column is datetime
+                % New unionized interval
+                combined{i,1} = min(allTimes); % min of times
+                combined{i,2} = max(allTimes); % max of times
+                
+                % Corresponding latitudes
+                combined{i,3} = allLats(find(allTimes == combined{i,1}, 1)); 
+                combined{i,4} = allLats(find(allTimes == combined{i,2}, 1));
+
+                combined{i+1,1} = missing;
                 overlapFlag = 1;
             end
         end
 
-        % Remove any NaT rows
+        % Remove any missing rows
         combined = combined(~ismissing(combined(:,1)), :);
     end
 
@@ -50,8 +58,20 @@ function output = intersect(combined)
     while(1)
         % Check if intervals overlap
         if isOverlap(combined(i,:), combined(j,:))
-            output{index,1} = max([combined{i,1} combined{j,1}]); % max of the start times
-            output{index,2} = min([combined{i,2} combined{j,2}]); % min of the end times
+            % Temporary arrays
+            startTimes = [combined{i,1} combined{j,1}];
+            stopTimes = [combined{i,2} combined{j,2}];
+
+            startLats = [combined{i,3} combined{j,3}];
+            stopLats = [combined{i,4} combined{j,4}];
+
+            % New intersect intervals
+            output{index,1} = max(startTimes); % max of the start times
+            output{index,2} = min(stopTimes); % min of the end times
+
+            % Corresponding lattitudes
+            output{index,3} = startLats(find(startTimes == output{index,1}, 1));
+            output{index,4} = stopLats(find(stopTimes == output{index,2}, 1));
 
             index = index + 1;
         end
@@ -68,7 +88,7 @@ function output = intersect(combined)
         end
     end
 
-    % Remove NaT rows
+    % Remove missing rows
     output = output(~ismissing(output(:,1)), :);
 end
 
@@ -152,16 +172,8 @@ allAccessIntervals = union(allAccessIntervals);
 combinedOccultation = sortrows([allAccessIntervals; occultationTimes], 1);
 combinedOccultation = intersect(combinedOccultation);
 
-% Filter for intervals less than 5 seconds
-accessDurations = allAccessIntervals{:,2} - allAccessIntervals{:,1};
-accessDurations = accessDurations(accessDurations > seconds(5), 1);
-
+% Get durations
 occultationDurations = combinedOccultation{:,2} - combinedOccultation{:,1};
-occultationDurations = occultationDurations(occultationDurations > seconds(5), 1);
-
-% Statistics
-totalDuration = sum(accessDurations);
-percentAccess = hours(totalDuration) / (24*14);
 
 % Includes 4 GPS access for positioning and time synchronization
 totalOccultationDuration =  sum(occultationDurations);
@@ -169,10 +181,14 @@ percentOccultation = hours(totalOccultationDuration) / (24*14);
 dailyOccultationAvg = totalOccultationDuration / 14; % hours
 occultationAvg = mean(occultationDurations);
 
-% Plot the durations on time graph (unfiltered for <5)
+% Plot the durations on time graph (filtered for <5)
+condition = occultationDurations > seconds(5);
+intervalFiltered = combinedOccultation(condition(:,1),:);
+durationFiltered = occultationDurations(condition(:,1),:);
+
 figure
-scatter(combinedOccultation{occultationDurations > seconds(5),1}, ...
-    occultationDurations, ".")
+scatter(intervalFiltered{:,1}, ...
+    durationFiltered, ".")
 title("Duration of Radio Occultations With Atleast 4 GPS Access")
 xlabel("Start Time of Interval")
 ylabel("Duration")
@@ -183,3 +199,18 @@ xticks(datetime('5-May-2026 18:00:00') + hours(0:24:336))
 yticks(minutes(0:0.5:7))
 ylim([0 minutes(7)])
 clear inputFormat outputFormat;
+
+% Plot the starting and stopping latitudes
+figure
+hold on
+for i = 1:size(intervalFiltered, 1)
+    plot(intervalFiltered{i,3:4}, [durationFiltered(i,1) durationFiltered(i,1)], '-c')
+end
+title("Duration of Radio Occultation Shown as Latitude Intervals")
+xlabel("Latitude (deg)")
+ylabel("Duration")
+grid on
+
+% Turn off the horizontal lines
+ax = gca;
+ax.YGrid = "off";

@@ -1,7 +1,7 @@
 close all
 % Make sure to run STKSetup first
 
-% List of data to run simulations for (assumes first column is datetime)
+% List of data to run simulations (assumes first and second columns are start/stop times)
 ELEMENTS = {'Start Time'; 'Stop Time'; 'To Start Lat'; 'To Stop Lat'};
 
 % Paths
