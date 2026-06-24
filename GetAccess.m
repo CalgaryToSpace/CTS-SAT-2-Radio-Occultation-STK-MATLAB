@@ -1,7 +1,7 @@
 close all
 % Make sure to run STKSetup first
 
-% List of data to run simulations (assumes first and second columns are start/stop times)
+% List of data to run simulations (assumes first and second columns are always start/stop times)
 ELEMENTS = {'Start Time'; 'Stop Time'; 'To Start Lat'; 'To Stop Lat'};
 
 % Paths
@@ -115,15 +115,15 @@ upwardsTimesExactly1 = removeNaN(upwardsTimesExactly1);
 occultation = removeNaN(occultation);
 
 % Write matrices
-writecell(backwardsTimesAtleast4, "output\backwardsTimesAtleast4");
-writecell(backwardsTimesExactly3, "output\backwardsTimesExactly3");
-writecell(backwardsTimesExactly2, "output\backwardsTimesExactly2");
-writecell(backwardsTimesExactly1, "output\backwardsTimesExactly1");
+writecell(backwardsTimesAtleast4, "output\Uncombined\backwardsTimesAtleast4");
+writecell(backwardsTimesExactly3, "output\Uncombined\backwardsTimesExactly3");
+writecell(backwardsTimesExactly2, "output\Uncombined\backwardsTimesExactly2");
+writecell(backwardsTimesExactly1, "output\Uncombined\backwardsTimesExactly1");
 
-writecell(upwardsTimesAtleast4, "output\upwardsTimesAtleast4");
-writecell(upwardsTimesExactly3, "output\upwardsTimesExactly3");
-writecell(upwardsTimesExactly2, "output\upwardsTimesExactly2");
-writecell(upwardsTimesExactly1, "output\upwardsTimesExactly1");
+writecell(upwardsTimesAtleast4, "output\Uncombined\upwardsTimesAtleast4");
+writecell(upwardsTimesExactly3, "output\Uncombined\upwardsTimesExactly3");
+writecell(upwardsTimesExactly2, "output\Uncombined\upwardsTimesExactly2");
+writecell(upwardsTimesExactly1, "output\Uncombined\upwardsTimesExactly1");
 
-writecell(occultation, "output\occultationTimes");
+writecell(occultation, "output\Uncombined\occultationTimes");
 

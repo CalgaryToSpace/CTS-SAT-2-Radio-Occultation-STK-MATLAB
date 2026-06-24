@@ -1,7 +1,7 @@
 clear
 close all
 
-% List of data to run simulations (assumes first and second columns are start/stop times)
+% List of data to run simulations (assumes first and second columns are always start/stop times)
 ELEMENTS = {'StartTime'; 'StopTime'; 'ToStartLat'; 'ToStopLat'};
 
 % --------------------------------------------------------------------------------%
@@ -92,32 +92,21 @@ function output = intersect(combined)
     output = output(~ismissing(output(:,1)), :);
 end
 
-% Set options for reading tables
-opt = detectImportOptions("Output\backwardsTimesAtleast4.txt");
-
-opt.Delimiter = ',';
-opt.VariableTypes{1} = 'datetime';
-opt.VariableTypes{2} = 'datetime';
-opt.VariableTypes{3} = 'double';
-opt.VariableTypes{4} = 'double';
-opt.VariableNames = ELEMENTS;
-
-% Date time formatting
-opt = setvaropts(opt, ELEMENTS{1}, 'InputFormat', "dd MMMM yyyy HH:mm:ss.SSS");
-opt = setvaropts(opt, ELEMENTS{2}, 'InputFormat', "dd MMMM yyyy HH:mm:ss.SSS");
+% Get options for reading tables
+opt = GetFileFormat("Output\Uncombined\backwardsTimesAtleast4.txt", ELEMENTS);
 
 % Read in access times
-backwardsTimesAtleast4 = readtable("output\backwardsTimesAtleast4",opt);
-backwardsTimesExactly3 = readtable("output\backwardsTimesExactly3",opt);
-backwardsTimesExactly2 = readtable("output\backwardsTimesExactly2",opt);
-backwardsTimesExactly1 = readtable("output\backwardsTimesExactly1",opt);
+backwardsTimesAtleast4 = readtable("output\Uncombined\backwardsTimesAtleast4",opt);
+backwardsTimesExactly3 = readtable("output\Uncombined\backwardsTimesExactly3",opt);
+backwardsTimesExactly2 = readtable("output\Uncombined\backwardsTimesExactly2",opt);
+backwardsTimesExactly1 = readtable("output\Uncombined\backwardsTimesExactly1",opt);
 
-upwardsTimesAtleast4 = readtable("output\upwardsTimesAtleast4",opt);
-upwardsTimesExactly3 = readtable("output\upwardsTimesExactly3",opt);
-upwardsTimesExactly2 = readtable("output\upwardsTimesExactly2",opt);
-upwardsTimesExactly1 = readtable("output\upwardsTimesExactly1",opt);
+upwardsTimesAtleast4 = readtable("output\Uncombined\upwardsTimesAtleast4",opt);
+upwardsTimesExactly3 = readtable("output\Uncombined\upwardsTimesExactly3",opt);
+upwardsTimesExactly2 = readtable("output\Uncombined\upwardsTimesExactly2",opt);
+upwardsTimesExactly1 = readtable("output\Uncombined\upwardsTimesExactly1",opt);
 
-occultationTimes = readtable("output\occultationTimes",opt);
+occultationTimes = readtable("output\Uncombined\occultationTimes",opt);
 
 % Sort the rows (ascending order) based on the start time and union
 % duplicates
@@ -172,45 +161,4 @@ allAccessIntervals = union(allAccessIntervals);
 combinedOccultation = sortrows([allAccessIntervals; occultationTimes], 1);
 combinedOccultation = intersect(combinedOccultation);
 
-% Get durations
-occultationDurations = combinedOccultation{:,2} - combinedOccultation{:,1};
-
-% Includes 4 GPS access for positioning and time synchronization
-totalOccultationDuration =  sum(occultationDurations);
-percentOccultation = hours(totalOccultationDuration) / (24*14);
-dailyOccultationAvg = totalOccultationDuration / 14; % hours
-occultationAvg = mean(occultationDurations);
-
-% Plot the durations on time graph (filtered for <5)
-condition = occultationDurations > seconds(5);
-intervalFiltered = combinedOccultation(condition(:,1),:);
-durationFiltered = occultationDurations(condition(:,1),:);
-
-figure
-scatter(intervalFiltered{:,1}, ...
-    durationFiltered, ".")
-title("Duration of Radio Occultations With Atleast 4 GPS Access")
-xlabel("Start Time of Interval")
-ylabel("Duration")
-grid on
-
-% Assumes May 5th start date
-xticks(datetime('5-May-2026 18:00:00') + hours(0:24:336))
-yticks(minutes(0:0.5:7))
-ylim([0 minutes(7)])
-clear inputFormat outputFormat;
-
-% Plot the starting and stopping latitudes
-figure
-hold on
-for i = 1:size(intervalFiltered, 1)
-    plot(intervalFiltered{i,3:4}, [durationFiltered(i,1) durationFiltered(i,1)], '-c')
-end
-title("Duration of Radio Occultation Shown as Latitude Intervals")
-xlabel("Latitude (deg)")
-ylabel("Duration")
-grid on
-
-% Turn off the horizontal lines
-ax = gca;
-ax.YGrid = "off";
+writetable(combinedOccultation, "Output\Combined\occultation_2weeks.txt")
