@@ -2,7 +2,7 @@
 ## Introduction
 This program opens an STK scenario for radio occultation and extracts and saves access data. It can also process access data to create plots or compute statistics.
 
-## Running the Program
+## File Description
 To fully run the program, execute the files in the following order: <br>
 1. STKSetup.m <br>
 * Opens STK and gets the scenario object for further processing. This code will take about 10 minutes to execute because it waits for STK to fully load. Do not worry if STK is not responding (it does this a lot).
