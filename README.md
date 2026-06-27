@@ -45,3 +45,9 @@ access data. This function assumes variable types for each column.
 
 
 Note that you only have to run STKSetup and GetAccess once whenever the scenario is changed. ProccessTimes can be executed as long as output files exist.
+## Results
+There was a radio occultation with 3D positioning requirements 16.31% of the time and the daily average was 3 hours, 54 minutes and 54 seconds. Additionally, the average duration was 1 minute and 52 seconds. The following graph shows when SAT-2 has at least 5 seconds of radio occultation with 3D positioning: <br>
+<img width="2466" height="1342" alt="image" src="https://github.com/user-attachments/assets/ba3a7b09-5fb9-431c-93c5-2ba0c09256cd" />
+The latitude intervals were also graphed below where each line represents a radio occultation: <br>
+<img width="2474" height="1266" alt="image" src="https://github.com/user-attachments/assets/ec9c3130-14f2-4b75-8c37-f4441d65d653" />
+
