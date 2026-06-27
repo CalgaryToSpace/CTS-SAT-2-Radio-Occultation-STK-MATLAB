@@ -32,5 +32,16 @@ To fully run the program, execute the files in the following order: <br>
 * Computes some statistics on the durations and latitudes.
 * Create plots on the data.
 
+<ins>Functions:<ins> <br>
+* GetFileFormat.m
+  * Returns the options for reading in a file containing 
+access data. This function assumes variable types for each column.
+  * Inputs:
+     * filePath (string) - Path to the file to import options from
+     * ELEMENTS (string array) - Array containing all variable names
+  * Output:
+     *  opt - Contains the structure of the table, including variable name and type
+
+
 
 Note that you only have to run STKSetup and GetAccess once whenever the scenario is changed. ProccessTimes can be executed as long as output files exist.
