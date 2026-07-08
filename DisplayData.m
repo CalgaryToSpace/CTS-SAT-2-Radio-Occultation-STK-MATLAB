@@ -2,12 +2,16 @@ clear
 close all
 
 % List of data to run simulations (assumes first and second columns are always start/stop times)
-ELEMENTS = {'StartTime'; 'StopTime'; 'ToStartLat'; 'ToStopLat'};
-STARTDATE = '5-May-2026 18:00:00';
+ELEMENTS = {'StartTime'; 'StopTime'; 'ToStartLat'; 'ToStopLat'; 'To Start Lon'; 'To Stop Lon'};
+START_DATE = '5-May-2026 18:00:00';
+
+DATA_PATH = 'Output\Combined\occultation_2weeks';
+
+% -----------------------------------------------------------------------------%
 
 % Read in table
-opt = GetFileFormat("Output\Combined\occultation_2weeks", ELEMENTS);
-combinedOccultation = readtable("Output\Combined\occultation_2weeks", opt);
+opt = GetFileFormat(DATA_PATH, ELEMENTS);
+combinedOccultation = readtable(DATA_PATH, opt);
 
 % Get durations
 occultationDurations = combinedOccultation{:,2} - combinedOccultation{:,1};
@@ -36,7 +40,7 @@ ylabel("Duration")
 grid on
 
 % Assumes May 5th start date
-xticks(datetime(STARTDATE) + hours(0:24:336))
+xticks(datetime(START_DATE) + hours(0:24:336))
 yticks(minutes(0:0.5:7))
 
 % Plot the starting and stopping latitudes -------------------------------%
@@ -61,8 +65,16 @@ figure
 scatter(combinedOccultation{:,1}, latitudeLength, ".")
 title("Latitude Length of Radio Occultations")
 xlabel("Start Time of Interval")
-xticks(datetime(STARTDATE) + hours(0:24:336))
+xticks(datetime(START_DATE) + hours(0:24:336))
 
 ylabel("Latitude Length (deg)")
 ylim([-0.3 26.5])
 grid on
+
+% Interpolate scattered data --------------------------------------------%
+numBins = 100;
+stepSize = 0.1;
+
+allPointsSize = combinedOccultation{:,4};
+
+%allPoints = 

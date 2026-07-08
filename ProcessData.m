@@ -1,8 +1,9 @@
-clear
 close all
 
-% List of data to run simulations (assumes first and second columns are always start/stop times)
-ELEMENTS = {'StartTime'; 'StopTime'; 'ToStartLat'; 'ToStopLat'};
+% List of data to run simulations
+ELEMENTS = {'StartTime'; 'StopTime'; 'ToStartLat'; 'ToStopLat'; 'ToStartLon'; 'ToStopLon'};
+
+ouputFile = "Output\Combined\occultation_2weeks.txt";
 
 % --------------------------------------------------------------------------------%
 
@@ -16,18 +17,23 @@ function output = union(combined)
    
         for i=1:n - 1
             % Check if intervals overlap
-            if combined{i,1} <= combined{i+1,2} && combined{i,2} >= combined{i+1,1}
+            if combined{i,"StartTime"} <= combined{i+1,"StopTime"} && combined{i,"StopTime"} >= combined{i+1,"StartTime"}
                 % Temporary arrays
-                allTimes = [combined{i,1:2} combined{i+1,1:2}];
-                allLats = [combined{i,3:4} combined{i+1,3:4}];
+                allTimes = [combined{i,["StartTime" "StopTime"]} combined{i+1,["StartTime" "StopTime"]}];
+                allLats = [combined{i,["ToStartLat" "ToStopLat"]} combined{i+1,["ToStartLat" "ToStopLat"]}];
+                allLons = [combined{i,["ToStartLon" "ToStopLon"]} combined{i+1,["ToStartLon" "ToStopLon"]}];
 
                 % New unionized interval
-                combined{i,1} = min(allTimes); % min of times
-                combined{i,2} = max(allTimes); % max of times
+                combined{i,"StartTime"} = min(allTimes); % min of times
+                combined{i,"StopTime"} = max(allTimes); % max of times
                 
                 % Corresponding latitudes
-                combined{i,3} = allLats(find(allTimes == combined{i,1}, 1)); 
-                combined{i,4} = allLats(find(allTimes == combined{i,2}, 1));
+                combined{i,"ToStartLat"} = allLats(find(allTimes == combined{i,"StartTime"}, 1)); 
+                combined{i,"ToStopLat"} = allLats(find(allTimes == combined{i,"StopTime"}, 1));
+
+                % Corresponding longitudes
+                combined{i,"ToStartLon"} = allLons(find(allTimes == combined{i,"StartTime"}, 1)); 
+                combined{i,"ToStopLon"} = allLons(find(allTimes == combined{i,"StopTime"}, 1));
 
                 combined{i+1,1} = missing;
                 overlapFlag = 1;
@@ -47,8 +53,9 @@ function output = intersect(combined)
     i = 1; j = 2;
 
     % Checks if two intervals are overlapping
-    isOverlap = @(one, two) one{1,1} < two{1,2} && one{1,2} > two{1,1};
+    isOverlap = @(one, two) one{1,"StartTime"} < two{1,"StopTime"} && one{1,"StopTime"} > two{1,"StartTime"};
 
+    % Initialize a same size table
     output = combined([], :); % init table
     output = resize(output, n);
 
@@ -59,19 +66,26 @@ function output = intersect(combined)
         % Check if intervals overlap
         if isOverlap(combined(i,:), combined(j,:))
             % Temporary arrays
-            startTimes = [combined{i,1} combined{j,1}];
-            stopTimes = [combined{i,2} combined{j,2}];
+            startTimes = [combined{i,"StartTime"} combined{j,"StartTime"}];
+            stopTimes = [combined{i,"StopTime"} combined{j,"StopTime"}];
 
-            startLats = [combined{i,3} combined{j,3}];
-            stopLats = [combined{i,4} combined{j,4}];
+            startLats = [combined{i,"ToStartLat"} combined{j,"ToStartLat"}];
+            stopLats = [combined{i,"ToStopLat"} combined{j,"ToStopLat"}];
+
+            startLons = [combined{i,"ToStartLon"} combined{j,"ToStartLon"}];
+            stopLons = [combined{i,"ToStopLon"} combined{j,"ToStopLon"}];
 
             % New intersect intervals
-            output{index,1} = max(startTimes); % max of the start times
-            output{index,2} = min(stopTimes); % min of the end times
+            output{index,"StartTime"} = max(startTimes); % max of the start times
+            output{index,"StopTime"} = min(stopTimes); % min of the end times
 
             % Corresponding lattitudes
-            output{index,3} = startLats(find(startTimes == output{index,1}, 1));
-            output{index,4} = stopLats(find(stopTimes == output{index,2}, 1));
+            output{index,"ToStartLat"} = startLats(find(startTimes == output{index,"StartTime"}, 1));
+            output{index,"ToStopLat"} = stopLats(find(stopTimes == output{index,"StopTime"}, 1));
+
+            % Corresponding longitudes
+            output{index,"ToStartLon"} = startLons(find(startTimes == output{index,"StartTime"}, 1));
+            output{index,"ToStopLon"} = stopLons(find(stopTimes == output{index,"StopTime"}, 1));
 
             index = index + 1;
         end
@@ -161,4 +175,4 @@ allAccessIntervals = union(allAccessIntervals);
 combinedOccultation = sortrows([allAccessIntervals; occultationTimes], 1);
 combinedOccultation = intersect(combinedOccultation);
 
-writetable(combinedOccultation, "Output\Combined\occultation_2weeks.txt")
+writetable(combinedOccultation, ouputFile)

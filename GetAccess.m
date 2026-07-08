@@ -1,8 +1,8 @@
 close all
 % Make sure to run STKSetup first
 
-% List of data to run simulations (assumes first and second columns are always start/stop times)
-ELEMENTS = {'Start Time'; 'Stop Time'; 'To Start Lat'; 'To Stop Lat'};
+% List of data to run simulations
+ELEMENTS = {'Start Time'; 'Stop Time'; 'To Start Lat'; 'To Stop Lat'; 'To Start Lon'; 'To Stop Lon'};
 
 % Paths
 backwardsChainPath = '/Chain/Backwards';
