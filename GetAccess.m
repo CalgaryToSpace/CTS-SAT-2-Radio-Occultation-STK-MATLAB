@@ -114,6 +114,19 @@ upwardsTimesExactly1 = removeNaN(upwardsTimesExactly1);
 
 occultation = removeNaN(occultation);
 
+% Switch the 4th and 5th row so its start/stop lat, start/stop lon
+backwardsTimesAtleast4(:,[4 5]) = backwardsTimesAtleast4(:,[5 4]);
+backwardsTimesExactly3(:,[4 5]) = backwardsTimesExactly3(:,[5 4]);
+backwardsTimesExactly2(:,[4 5]) = backwardsTimesExactly2(:,[5 4]);
+backwardsTimesExactly1(:,[4 5]) = backwardsTimesExactly1(:,[5 4]);
+
+upwardsTimesAtleast4(:,[4 5]) = upwardsTimesAtleast4(:,[5 4]);
+upwardsTimesExactly3(:,[4 5]) = upwardsTimesExactly3(:,[5 4]);
+upwardsTimesExactly2(:,[4 5]) = upwardsTimesExactly2(:,[5 4]);
+upwardsTimesExactly1(:,[4 5]) = upwardsTimesExactly1(:,[5 4]);
+
+occultation(:,[4 5]) = occultation(:,[5 4]);
+
 % Write matrices
 writecell(backwardsTimesAtleast4, "output\Uncombined\backwardsTimesAtleast4");
 writecell(backwardsTimesExactly3, "output\Uncombined\backwardsTimesExactly3");

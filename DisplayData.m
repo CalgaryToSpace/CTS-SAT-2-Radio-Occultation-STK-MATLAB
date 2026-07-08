@@ -71,7 +71,7 @@ ylabel("Latitude Length (deg)")
 ylim([-0.3 26.5])
 grid on
 
-% Interpolate scattered data --------------------------------------------%
+% Interpolate scattered data (TODO)--------------------------------------------%
 numBins = 100;
 stepSize = 0.1;
 
