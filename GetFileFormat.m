@@ -1,6 +1,6 @@
 function [opt] = GetFileFormat(filePath, ELEMENTS)
 %{   
-GETFILEOPTIONS - Returns the options for reading in a file containing 
+GetFileFormat - Returns the options for reading in a file containing 
 access data. This function assumes variable types and names 
    
 Input: 
