@@ -73,8 +73,29 @@ grid on
 
 % Interpolate scattered data (TODO)--------------------------------------------%
 numBins = 100;
-stepSize = 0.1;
+stepSize = 0.3;
 
-allPointsSize = combinedOccultation{:,4};
+% Get all path lengths
+pathLengths = sqrt((combinedOccultation{:,4} - combinedOccultation{:,3}).^2 + ...
+    (combinedOccultation{:,6} - combinedOccultation{:,5}).^2);
+
+% Get number of points
+numPoints = round(pathLengths ./ stepSize);
+
+allPoints = zeros(sum(numPoints), 2);
+
+pointStepSize = pathLengths ./ numPoints;
+
+% All point latitudes and longitudes
+for i = 1:size(combinedOccultation, 1)
+    for j = 1:numPoints(i)
+        % [Lat Lon]
+        allPoints(sum(numPoints(1:i)) - numPoints(i) + j, 1) = ...
+            combinedOccultation{i, 3} + (j - 1) * pointStepSize(i); 
+        allPoints(sum(numPoints(1:i)) - numPoints(i) + j, 2) = ...
+            combinedOccultation{i, 5} + (j - 1) * pointStepSize(i); 
+    end
+end
+
 
 %allPoints = 
